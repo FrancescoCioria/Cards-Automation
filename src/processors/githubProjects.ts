@@ -135,14 +135,17 @@ function addIssueCardToProject(
     });
 
     if (columnOpened.isNone()) {
-      return fromLeft(
+      console.log(
         `project "${project.name}" in repo "${
           repository.fullName
-        }" is missing the column for opened issues (should be named "(n) column_name")`
+        }" is missing the column for opened issues (should be named "(n) column_name")\nfalling back to the first column of the project`
       );
     }
 
-    const startColumn = categoryColumn.fold(columnOpened.value, identity);
+    const startColumn = categoryColumn.fold(
+      columnOpened.fold(columns[0], identity),
+      identity
+    );
 
     // create card
     return create(
