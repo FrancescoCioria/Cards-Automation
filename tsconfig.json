@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "lib": ["es2017"],
+    "strict": true,
+    "pretty": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "lib"
+  },
+  "include": ["src", "typings"],
+  "exclude": ["test"]
+}

@@ -1,0 +1,78 @@
+{
+  "name": "prisma",
+  "version": "0.1.0",
+  "description": "PRISMA is a GitHub Project automation tool to improve collaboration across the team",
+  "main": "lib/index.js",
+  "scripts": {
+    "dev": "DEBUG=prisma,http,express:* nodemon lib/index.js",
+    "clean": "rm -rf lib",
+    "build": "yarn clean && tsc",
+    "watch": "yarn clean && tsc --watch",
+    "start": "DEBUG=prisma,http,express:* node lib/index.js",
+    "test": "GITHUB_TOKEN='' jest --runInBand",
+    "deploy": "yarn build && serverless deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/buildo/prisma.git"
+  },
+  "author": "buildo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/buildo/prisma/issues"
+  },
+  "homepage": "https://github.com/buildo/prisma#readme",
+  "dependencies": {
+    "@octokit/app": "^4.2.0",
+    "body-parser": "^1.15.0",
+    "camelcase-object": "^1.0.0",
+    "debug": "^2.2.0",
+    "express": "^4.13.4",
+    "fp-ts": "^1.15.0",
+    "graphql-request": "^1.8.2",
+    "io-ts": "^1.8.5",
+    "lodash": "^4.11.1",
+    "octokat": "^0.4.17",
+    "rx": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.17.0",
+    "@types/debug": "^0.0.31",
+    "@types/express": "^4.16.0",
+    "@types/jest": "^23.3.3",
+    "@types/lodash": "^4.14.116",
+    "@types/lru-cache": "^5.1.0",
+    "@types/nock": "^9.3.0",
+    "@types/node": "^13.11.1",
+    "@types/rx": "^4.1.1",
+    "@types/supertest": "^2.0.6",
+    "jest": "^23.6.0",
+    "nock": "^10.0.0",
+    "nodemon": "^1.18.3",
+    "prettier": "^1.14.3",
+    "supertest": "^3.3.0",
+    "ts-jest": "^23.10.3",
+    "ts-node": "^8.8.2",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "./tsconfig.json"
+      }
+    },
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.tsx?$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
+  },
+  "resolutions": {
+    "fp-ts": "1.15.0"
+  }
+}

@@ -1,0 +1,16 @@
+/config.json
+/lib
+*.tags
+*.tags1
+logs
+*.log
+npm-debug.log*
+node_modules
+.npm
+
+# Serverless directories
+.serverless
+serverless.yml
+
+# GitHub App Credentials
+src/githubAppCredentials.ts
