@@ -1,6 +1,6 @@
 import * as t from "io-ts";
 import { startsWith, some, flatten } from "lodash";
-import { prismaLog, traverseTaskEither } from "../utils";
+import { traverseTaskEither } from "../utils";
 import {
   Column,
   Issue,
@@ -110,10 +110,10 @@ function addIssueCardToProject(
       );
     }
     const project = head(res.repository.projects.nodes).foldL(() => {
-      prismaLog(
+      console.log(
         `repository "${
           repository.fullName
-        }" is missing a PRISMA project: fallbacking to "${
+        }" is missing a GitHub Projects Automation project: fallbacking to "${
           res.fallbackProject.name
         }" project`
       );
@@ -152,7 +152,7 @@ function addIssueCardToProject(
         content_type: "Issue"
       }
     ).map(() => {
-      prismaLog(
+      console.log(
         `Card for issue "${issue.title}" in repo "${
           repository.fullName
         }" added to the column "${startColumn.name}" of the project "${
@@ -330,9 +330,13 @@ const saveTokenToSession = (
 };
 
 export default (event: BaseEvent): TaskEither<Response, unknown> => {
-  if (event.body.sender.login === "prismabot") {
+  if (event.body.sender.login === "GitHub-Projects-Automation") {
     return fromLeft(
-      buildError(`Ignored event "${event.event}" as sender is "prismabot"`)
+      buildError(
+        `Ignored event "${
+          event.event
+        }" as sender is "GitHub-Projects-Automation"`
+      )
     );
   } else if (isEvent(IssueEvent, event)) {
     const { action, issue, label } = event.body;
@@ -340,13 +344,13 @@ export default (event: BaseEvent): TaskEither<Response, unknown> => {
 
     if (action === "opened") {
       // new issue
-      prismaLog(`New issue "${issue.title}" added to repo "${repoFullName}"`);
+      console.log(`New issue "${issue.title}" added to repo "${repoFullName}"`);
       return saveTokenToSession(event).chain(() =>
         addIssueCardToProject(event.body.repository, issue).mapLeft(buildError)
       );
     } else if (action === "closed") {
       // issue closed
-      prismaLog(
+      console.log(
         `Issue "${issue.title}" in repo "${repoFullName}" has been closed`
       );
       return saveTokenToSession(event).chain(() =>
@@ -354,7 +358,7 @@ export default (event: BaseEvent): TaskEither<Response, unknown> => {
       );
     } else if (action === "labeled" && issue.state !== "closed" && label) {
       // issue labeled
-      prismaLog(
+      console.log(
         `Issue "${
           issue.title
         }" in repo "${repoFullName}" has been labeled as "${label.name}"`
@@ -377,13 +381,13 @@ export default (event: BaseEvent): TaskEither<Response, unknown> => {
       // issue card manually created or moved to different column
 
       if (event.body.repository) {
-        prismaLog(
+        console.log(
           `Card "${card.id}" in repo "${
             event.body.repository.fullName
           }" has been moved/added to the column "${card.columnId}"`
         );
       } else {
-        prismaLog(
+        console.log(
           `Card "${
             card.id
           }" in org buildo has been moved/added to the column "${

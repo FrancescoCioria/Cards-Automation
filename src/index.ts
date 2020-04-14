@@ -1,5 +1,4 @@
 import { BaseEvent, Response } from "./model";
-import { prismaLog } from "./utils";
 import { fromEither } from "fp-ts/lib/TaskEither";
 import githubProjects from "./processors/githubProjects";
 import { identity } from "fp-ts/lib/function";
@@ -19,7 +18,7 @@ const processEvent = async (event: unknown): Promise<Response> => {
   )
     .chain(baseEvent => {
       if (baseEvent.body.repository) {
-        prismaLog(
+        console.log(
           `new github event "${baseEvent.event}:${
             baseEvent.body.action
           }" from repo "${baseEvent.body.repository.fullName}"`

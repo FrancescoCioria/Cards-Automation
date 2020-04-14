@@ -131,7 +131,7 @@ export const addIssueCardToProjectQuery = `
     }
     repository: node(id: $repositoryNodeId) {
       ... on Repository {
-        projects(search: "PRISMA", states: OPEN, first: 1) {
+        projects(search: "GitHub Projects Automation", states: OPEN, first: 1) {
           nodes {
             ${projectFragment}
             columns(first: 100) {
