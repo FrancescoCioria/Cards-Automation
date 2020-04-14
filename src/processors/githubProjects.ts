@@ -35,10 +35,10 @@ const isColumnClosed = (column: Column): boolean =>
   startsWith(column.name, "(d)");
 
 const getColumnWorkflowLabels = (column: Column): string[] => {
-  const workflowRegExp = /.+\{(.+)\}/;
+  const workflowRegExp = /(.+)?\{(.+)\}/;
 
   const regExpRes = workflowRegExp.exec(column.name);
-  const workflowColumns = regExpRes ? regExpRes[1] : "";
+  const workflowColumns = regExpRes ? regExpRes[2] : "";
 
   return workflowColumns
     .split(",")
@@ -51,10 +51,10 @@ const getAllWorkflowLabels = (columns: Column[]): string[] => {
 };
 
 const getColumnCategoryLabels = (column: Column): string[] => {
-  const categoryRegExp = /.+\[(.+)\]/;
+  const categoryRegExp = /(.+)?\[(.+)\]/;
 
   const regExpRes = categoryRegExp.exec(column.name);
-  const categoryColumns = regExpRes ? regExpRes[1] : "";
+  const categoryColumns = regExpRes ? regExpRes[2] : "";
 
   return categoryColumns
     .split(",")
