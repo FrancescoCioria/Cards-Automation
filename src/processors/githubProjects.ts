@@ -333,12 +333,10 @@ const saveTokenToSession = (
 };
 
 export default (event: BaseEvent): TaskEither<Response, unknown> => {
-  if (event.body.sender.login === "GitHub-Projects-Automation") {
+  if (event.body.sender.login === "projects-automation[bot]") {
     return fromLeft(
       buildError(
-        `Ignored event "${
-          event.event
-        }" as sender is "GitHub-Projects-Automation"`
+        `Ignored event "${event.event}" as sender is "projects-automation[bot]"`
       )
     );
   } else if (isEvent(IssueEvent, event)) {
