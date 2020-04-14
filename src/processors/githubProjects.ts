@@ -388,9 +388,7 @@ export default (event: BaseEvent): TaskEither<Response, unknown> => {
         );
       } else {
         console.log(
-          `Card "${
-            card.id
-          }" in org buildo has been moved/added to the column "${
+          `Card "${card.id}" in org ... has been moved/added to the column "${
             card.columnId
           }"`
         );
