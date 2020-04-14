@@ -11,7 +11,7 @@ import {
   Repository,
   Response
 } from "../model";
-import { create, remove, update } from "./octokat";
+import { create, remove, update } from "./rest";
 import { TaskEither, fromLeft, taskEither } from "fp-ts/lib/TaskEither";
 import { findFirst, head } from "fp-ts/lib/Array";
 import {
