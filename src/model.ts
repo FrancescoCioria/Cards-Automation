@@ -89,7 +89,10 @@ export const IssueEvent = t.type({
     issue: Issue,
     repository: Repository,
     action: t.keyof({ opened: true, closed: true, labeled: true }),
-    label: t.union([t.type({ name: t.string }), t.undefined])
+    label: t.union([t.type({ name: t.string }), t.undefined]),
+    installation: t.type({
+      id: t.number
+    })
   })
 });
 export type IssueEvent = t.TypeOf<typeof IssueEvent>;
@@ -106,13 +109,19 @@ export const ProjectCardEvent = t.type({
         columnId: t.type({
           from: t.number
         })
+      }),
+      installation: t.type({
+        id: t.number
       })
     }),
     t.type({
       sender: User,
       projectCard: CardFromEvent,
       repository: t.union([t.undefined, Repository]),
-      action: t.keyof({ created: true, converted: true })
+      action: t.keyof({ created: true, converted: true }),
+      installation: t.type({
+        id: t.number
+      })
     })
   ])
 });

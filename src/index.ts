@@ -1,5 +1,4 @@
 import { BaseEvent, Response } from "./model";
-import getToken from "./getToken";
 import { prismaLog } from "./utils";
 import { fromEither } from "fp-ts/lib/TaskEither";
 import githubProjects from "./processors/githubProjects";
@@ -19,12 +18,6 @@ const processEvent = async (event: unknown): Promise<Response> => {
     })
   )
     .chain(baseEvent => {
-      return getToken(baseEvent).map<BaseEvent>(installationAccessToken => {
-        process.env.GITHUB_TOKEN = installationAccessToken;
-        return baseEvent;
-      });
-    })
-    .chain(baseEvent => {
       if (baseEvent.body.repository) {
         prismaLog(
           `new github event "${baseEvent.event}:${
@@ -43,7 +36,7 @@ const processEvent = async (event: unknown): Promise<Response> => {
 };
 
 export const githubWebhookListener = (event: {
-  body: string;
+  body: object;
   headers: any;
 }): Promise<Response> => {
   return processEvent(

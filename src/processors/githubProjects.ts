@@ -27,6 +27,7 @@ import {
 } from "./graphql";
 import { fromNullable } from "fp-ts/lib/Option";
 import { identity } from "fp-ts/lib/function";
+import getToken from "../getToken";
 
 const isColumnOpened = (column: Column): boolean =>
   startsWith(column.name, "(n)");
@@ -320,6 +321,14 @@ const buildError = (error: string): Response => ({
   body: error
 });
 
+const saveTokenToSession = (
+  event: BaseEvent
+): TaskEither<Response, unknown> => {
+  return getToken(event).map(installationAccessToken => {
+    process.env.GITHUB_TOKEN = installationAccessToken;
+  });
+};
+
 export default (event: BaseEvent): TaskEither<Response, unknown> => {
   if (event.body.sender.login === "prismabot") {
     return fromLeft(
@@ -332,15 +341,17 @@ export default (event: BaseEvent): TaskEither<Response, unknown> => {
     if (action === "opened") {
       // new issue
       prismaLog(`New issue "${issue.title}" added to repo "${repoFullName}"`);
-      return addIssueCardToProject(event.body.repository, issue).mapLeft(
-        buildError
+      return saveTokenToSession(event).chain(() =>
+        addIssueCardToProject(event.body.repository, issue).mapLeft(buildError)
       );
     } else if (action === "closed") {
       // issue closed
       prismaLog(
         `Issue "${issue.title}" in repo "${repoFullName}" has been closed`
       );
-      return moveIssueCardToClosed(repoFullName, issue).mapLeft(buildError);
+      return saveTokenToSession(event).chain(() =>
+        moveIssueCardToClosed(repoFullName, issue).mapLeft(buildError)
+      );
     } else if (action === "labeled" && issue.state !== "closed" && label) {
       // issue labeled
       prismaLog(
@@ -348,11 +359,11 @@ export default (event: BaseEvent): TaskEither<Response, unknown> => {
           issue.title
         }" in repo "${repoFullName}" has been labeled as "${label.name}"`
       );
-      return maybeMoveIssueCardToWorkflowColumn(
-        repoFullName,
-        issue,
-        label
-      ).mapLeft(buildError);
+      return saveTokenToSession(event).chain(() =>
+        maybeMoveIssueCardToWorkflowColumn(repoFullName, issue, label).mapLeft(
+          buildError
+        )
+      );
     }
   } else if (isEvent(ProjectCardEvent, event)) {
     const { projectCard: card } = event.body;
@@ -381,19 +392,21 @@ export default (event: BaseEvent): TaskEither<Response, unknown> => {
         );
       }
 
-      return query(
-        columnsAndRepositoryByCardQuery,
-        { nodeId: card.nodeId },
-        ColumnsAndRepositoryByCardResponse
-      )
-        .chain(res => {
-          const repoFullName = res.card.content.repository.fullName;
-          const columns = res.card.project.columns.nodes;
-          return maybeUpdateWorkflowLabels(repoFullName, card, columns).chain(
-            () => maybeCloseIssue(repoFullName, card, columns)
-          );
-        })
-        .mapLeft(() => buildError("Internal Server Error"));
+      return saveTokenToSession(event).chain(() =>
+        query(
+          columnsAndRepositoryByCardQuery,
+          { nodeId: card.nodeId },
+          ColumnsAndRepositoryByCardResponse
+        )
+          .chain(res => {
+            const repoFullName = res.card.content.repository.fullName;
+            const columns = res.card.project.columns.nodes;
+            return maybeUpdateWorkflowLabels(repoFullName, card, columns).chain(
+              () => maybeCloseIssue(repoFullName, card, columns)
+            );
+          })
+          .mapLeft(() => buildError("Internal Server Error"))
+      );
     }
   } else {
     console.log(
