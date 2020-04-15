@@ -1,6 +1,6 @@
 # Cards Automation
 
-GitHub App to automatically add and move cards in any GitHub Project
+GitHub App to automatically add and move cards in any GitHub Project based on their labels
 
 ## Automations
 
