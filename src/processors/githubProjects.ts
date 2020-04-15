@@ -9,7 +9,7 @@ import {
   ProjectCardEvent,
   BaseEvent,
   Repository,
-  Response
+  Error
 } from "../model";
 import { create, remove, update } from "./rest";
 import { TaskEither, fromLeft, taskEither } from "fp-ts/lib/TaskEither";
@@ -319,20 +319,18 @@ const isEvent = <A>(type: t.Type<A>, event: unknown): event is A => {
   return type.decode(event).isRight();
 };
 
-const buildError = (error: string): Response => ({
+const buildError = (error: string): Error => ({
   statusCode: 500,
-  body: error
+  error
 });
 
-const saveTokenToSession = (
-  event: BaseEvent
-): TaskEither<Response, unknown> => {
+const saveTokenToSession = (event: BaseEvent): TaskEither<Error, unknown> => {
   return getToken(event).map(installationAccessToken => {
     process.env.GITHUB_TOKEN = installationAccessToken;
   });
 };
 
-export default (event: BaseEvent): TaskEither<Response, unknown> => {
+export default (event: BaseEvent): TaskEither<Error, unknown> => {
   if (event.body.sender.login === "projects-automation[bot]") {
     return fromLeft(
       buildError(

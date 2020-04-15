@@ -3,6 +3,14 @@ import * as t from "io-ts";
 export type Response = {
   statusCode: number;
   body: string;
+  headers: {
+    "Content-Type": string;
+  };
+};
+
+export type Error = {
+  statusCode: number;
+  error: string;
 };
 
 export const GitHubEntity = t.type({

@@ -24,6 +24,7 @@
     "@octokit/app": "^4.2.0",
     "axios": "^0.19.2",
     "camelcase-object": "^1.0.0",
+    "crypto": "^1.0.1",
     "fp-ts": "^1.15.0",
     "graphql-request": "^1.8.2",
     "io-ts": "^1.8.5",

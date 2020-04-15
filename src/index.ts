@@ -1,10 +1,9 @@
 import { BaseEvent, Response } from "./model";
 import { fromEither } from "fp-ts/lib/TaskEither";
 import githubProjects from "./processors/githubProjects";
-import { identity } from "fp-ts/lib/function";
 import * as camelcaseObject from "camelcase-object";
+import * as crypto from "crypto";
 import { failure } from "io-ts/lib/PathReporter";
-import { WEBHOOK_SECRET } from "./githubAppCredentials";
 
 const processEvent = async (event: unknown): Promise<Response> => {
   return fromEither(
@@ -13,7 +12,7 @@ const processEvent = async (event: unknown): Promise<Response> => {
 
       return {
         statusCode: 403,
-        body: "Unknown Event"
+        error: "Unknown Event"
       };
     })
   )
@@ -28,18 +27,49 @@ const processEvent = async (event: unknown): Promise<Response> => {
 
       return githubProjects(baseEvent);
     })
-    .fold(identity, () => ({
-      statusCode: 200,
-      body: "Ok"
-    }))
+    .fold(
+      e => ({
+        statusCode: e.statusCode,
+        body: e.error,
+        headers: {
+          "Content-Type": "text/plain"
+        }
+      }),
+      () => ({
+        statusCode: 200,
+        body: "Ok",
+        headers: {
+          "Content-Type": "text/plain"
+        }
+      })
+    )
     .run();
+};
+
+const verifySignature = (signature: string, payload: any): boolean => {
+  const hmac = crypto.createHmac("sha1", process.env.WEBHOOK_SECRET!);
+  const digest = Buffer.from(
+    "sha1=" + hmac.update(payload).digest("hex"),
+    "utf8"
+  );
+  const checksum = Buffer.from(signature, "utf8");
+
+  return (
+    checksum.length === digest.length &&
+    crypto.timingSafeEqual(digest, checksum)
+  );
 };
 
 export const githubWebhookListener = (event: {
   body: object;
   headers: any;
 }): Promise<Response> => {
-  if (event.headers["X-Hub-Signature"] === WEBHOOK_SECRET) {
+  if (
+    verifySignature(
+      event.headers["X-Hub-Signature"],
+      JSON.stringify(event.body)
+    )
+  ) {
     return processEvent(
       camelcaseObject({
         body: event.body,
@@ -49,7 +79,10 @@ export const githubWebhookListener = (event: {
   } else {
     return Promise.resolve({
       statusCode: 401,
-      body: "Unauthorized"
+      body: "Unauthorized",
+      headers: {
+        "Content-Type": "text/plain"
+      }
     });
   }
 };
