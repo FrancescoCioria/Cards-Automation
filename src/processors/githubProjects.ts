@@ -145,16 +145,15 @@ function addIssueCardToProject(
       );
     });
 
-    if (columnOpened.isNone()) {
-      console.log(
-        `project "${project.name}" in repo "${
-          repository.fullName
-        }" is missing the column for opened issues (should be named "(n) column_name")\nfalling back to the first column of the project`
-      );
-    }
-
     const startColumn = categoryColumn.fold(
-      columnOpened.fold(columns[0], identity),
+      columnOpened.foldL(() => {
+        console.log(
+          `project "${project.name}" in repo "${
+            repository.fullName
+          }" is missing the column for opened issues (should be named "(n) column_name")\nfalling back to the first column of the project`
+        );
+        return columns[0];
+      }, identity),
       identity
     );
 
