@@ -2,6 +2,9 @@
 
 GitHub App to automatically add and move cards in any GitHub Project based on their labels
 
+## Install
+You can install this app for free from https://github.com/apps/cards-automation
+
 ## Automations
 
 - when you open a new issue, it creates a card for that issue into the first column of your project
