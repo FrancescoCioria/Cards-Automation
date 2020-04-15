@@ -109,16 +109,27 @@ function addIssueCardToProject(
         }"`
       );
     }
-    const project = head(res.repository.projects.nodes).foldL(() => {
+    const cardsAutomationProject = head(
+      res.repository.cardsAutomationProject.nodes
+    );
+    const fallbackProject = head(res.repository.fallbackProject.nodes);
+
+    if (fallbackProject.isNone()) {
+      return fromLeft(
+        `repository "${repository.fullName}" does not have any GitHub Projects`
+      );
+    }
+
+    const project = cardsAutomationProject.foldL(() => {
       console.log(
         `repository "${
           repository.fullName
-        }" is missing a GitHub Projects Automation project: fallbacking to "${
-          res.fallbackProject.name
+        }" is missing a \"Cards Automation\" project: falling back to "${
+          fallbackProject.value.name
         }" project`
       );
 
-      return res.fallbackProject;
+      return fallbackProject.value;
     }, identity);
 
     const labels = res.freshIssue.labels.nodes;

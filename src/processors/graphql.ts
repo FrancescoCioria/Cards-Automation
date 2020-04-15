@@ -131,7 +131,17 @@ export const addIssueCardToProjectQuery = `
     }
     repository: node(id: $repositoryNodeId) {
       ... on Repository {
-        projects(search: "GitHub Projects Automation", states: OPEN, first: 1) {
+        cardsAutomationProject: projects(search: "Cards Automation", states: OPEN, first: 1) {
+          nodes {
+            ${projectFragment}
+            columns(first: 100) {
+              nodes {
+                ${columnFragment}
+              }
+            }
+          }
+        }
+        fallbackProject: projects(states: OPEN, first: 1) {
           nodes {
             ${projectFragment}
             columns(first: 100) {
@@ -143,16 +153,7 @@ export const addIssueCardToProjectQuery = `
         }
       }
     }
-    fallbackProject: node(id: "MDc6UHJvamVjdDIxNTA0MDc=") {
-      ... on Project {
-        ${projectFragment}
-        columns(first: 100) {
-          nodes {
-            ${columnFragment}
-          }
-        }
-      }
-    }
+
   }
 `;
 
@@ -176,7 +177,7 @@ export const AddIssueCardToProjectResponse = t.type({
     })
   }),
   repository: t.type({
-    projects: t.type({
+    cardsAutomationProject: t.type({
       nodes: t.array(
         t.type({
           ...GitHubEntity.props,
@@ -191,16 +192,20 @@ export const AddIssueCardToProjectResponse = t.type({
           })
         })
       )
-    })
-  }),
-  fallbackProject: t.type({
-    ...GitHubEntity.props,
-    name: t.string,
-    columns: t.type({
+    }),
+    fallbackProject: t.type({
       nodes: t.array(
         t.type({
           ...GitHubEntity.props,
-          name: t.string
+          name: t.string,
+          columns: t.type({
+            nodes: t.array(
+              t.type({
+                ...GitHubEntity.props,
+                name: t.string
+              })
+            )
+          })
         })
       )
     })
