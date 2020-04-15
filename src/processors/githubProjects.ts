@@ -276,16 +276,16 @@ function maybeUpdateWorkflowLabels(
 
     if (!isNaN(issueNumber)) {
       // blindly remove any workflow label from issue
-      return traverseTaskEither(
+      traverseTaskEither(
         workflowLabels.filter(wl => !columnWorkflowLabels.includes(wl)),
         labelName => removeLabelFromIssue(repoFullName, issueNumber, labelName)
-      ).chain(() => {
-        // add correct workflow label
-        return create(
-          `https://api.github.com/repos/${repoFullName}/issues/${issueNumber}/labels`,
-          [{ name: columnWorkflowLabels[0] }]
-        );
-      });
+      ).run();
+
+      // add correct workflow label
+      return create(
+        `https://api.github.com/repos/${repoFullName}/issues/${issueNumber}/labels`,
+        [{ name: columnWorkflowLabels[0] }]
+      );
     }
   }
 
@@ -304,12 +304,14 @@ function maybeCloseIssue(
 
   if (column.isSome()) {
     // blindly close issue
-    return update(
+    update(
       `https://api.github.com/repos/${repoFullName}/issues/${getIssueNumberFromCard(
         card
       )}`,
       { state: "closed" }
-    );
+    ).run();
+
+    return taskEither.of(undefined);
   }
 
   return taskEither.of(undefined);
