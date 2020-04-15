@@ -4,6 +4,7 @@ import githubProjects from "./processors/githubProjects";
 import { identity } from "fp-ts/lib/function";
 import * as camelcaseObject from "camelcase-object";
 import { failure } from "io-ts/lib/PathReporter";
+import { WEBHOOK_SECRET } from "./githubAppCredentials";
 
 const processEvent = async (event: unknown): Promise<Response> => {
   return fromEither(
@@ -38,10 +39,17 @@ export const githubWebhookListener = (event: {
   body: object;
   headers: any;
 }): Promise<Response> => {
-  return processEvent(
-    camelcaseObject({
-      body: event.body,
-      event: event.headers["X-GitHub-Event"]
-    })
-  );
+  if (event.headers["X-Hub-Signature"] === WEBHOOK_SECRET) {
+    return processEvent(
+      camelcaseObject({
+        body: event.body,
+        event: event.headers["X-GitHub-Event"]
+      })
+    );
+  } else {
+    return Promise.resolve({
+      statusCode: 401,
+      body: "Unauthorized"
+    });
+  }
 };
