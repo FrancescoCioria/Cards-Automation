@@ -1,20 +1,20 @@
-import axios from "axios";
+import axios, { AxiosRequestConfig } from "axios";
 import { tryCatch, TaskEither } from "fp-ts/lib/TaskEither";
 
-const restClient = () => {
-  axios.defaults = {
+const restClient = (config: AxiosRequestConfig) => {
+  return axios({
+    ...config,
     headers: {
+      ...config.headers,
       Authorization: `token ${process.env.GITHUB_TOKEN}`,
       Accept: "application/vnd.github.inertia-preview+json"
     }
-  };
-
-  return axios;
+  });
 };
 
 export const create = (url: string, data: any): TaskEither<string, unknown> => {
   return tryCatch(
-    () => restClient().post(url, data),
+    () => restClient({ url, data, method: "POST" }),
     (e: any) => {
       const error = JSON.stringify(e.message);
       console.error(
@@ -30,7 +30,7 @@ export const create = (url: string, data: any): TaskEither<string, unknown> => {
 
 export const update = (url: string, data: any): TaskEither<string, unknown> => {
   return tryCatch(
-    () => restClient().put(url, data),
+    () => restClient({ url, data, method: "PUT" }),
     (e: any) => {
       const error = JSON.stringify(e.message);
       console.error(
@@ -46,7 +46,7 @@ export const update = (url: string, data: any): TaskEither<string, unknown> => {
 
 export const remove = (url: string): TaskEither<string, unknown> => {
   return tryCatch(
-    () => restClient().delete(url),
+    () => restClient({ url, method: "DELETE" }),
     (e: any) => {
       const error = JSON.stringify(e.message);
       console.error(
