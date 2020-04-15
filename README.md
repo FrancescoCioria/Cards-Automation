@@ -1,6 +1,6 @@
-# Project Automation
+# Cards Automation
 
-GitHub App to automate the flow of issue cards in a repository GitHub Project
+GitHub App to automatically add and move cards in any GitHub Project
 
 ## Automations
 
@@ -11,7 +11,7 @@ GitHub App to automate the flow of issue cards in a repository GitHub Project
 
 ### TriageColumns
 
-When a new issue is opened, Project Automation automatically creates a corresponding card in your project.
+When a new issue is opened, Cards Automation automatically creates a corresponding card in your project.
 
 By default, the card is created in the first column of your project.
 
@@ -22,18 +22,18 @@ A _TriageColumn_ is a column with the suffix `[Triage_Label]` in its name:
 ![image](https://user-images.githubusercontent.com/4029499/36200446-f5b81772-117c-11e8-8d0a-67f1376da524.png)
 
 In the example above, we've created a _TriageColumn_ to group all new issues created with the label `bug`.
-<br />Now, whenever we open an issue with the label `bug`, Project Automation will add its corresponding card to this column.
+<br />Now, whenever we open an issue with the label `bug`, Cards Automation will add its corresponding card to this column.
 
-### WorkflowColumns
+### StateColumns
 
-When you add a label to an existing issue, Project Automation automatically moves its card to the corresponding _WorkflowColumn_ of your project.
+When you add a label to an existing issue, Cards Automation automatically moves its card to the corresponding _WorkflowColumn_ of your project.
 
-A _WorflowColumn_ is a column with the suffix `{Worflow_Label}` in its name:
+A _StateColumn_ is a column with the suffix `{State_Label}` in its name:
 
 ![image](https://user-images.githubusercontent.com/4029499/36201549-96f0aec6-1180-11e8-9151-46209c707614.png)
 
-In the example above, we've created a _WorkflowColumn_ to group all issues labeled `WIP`.
-<br />Now, whenever we add the label `WIP` to an existing issue, Project Automation will move its corresponding card to this column.
+In the example above, we've created a _StateColumn_ to group all issues labeled `WIP`.
+<br />Now, whenever we add the label `WIP` to an existing issue, Cards Automation will move its corresponding card to this column.
 
 This also works backwards:
-If you manually move an issue card to this colum, Project Automation will add the label `WIP` to the corresponding issue
+If you manually move an issue card to this colum, Cards Automation will add the label `WIP` to the corresponding issue
