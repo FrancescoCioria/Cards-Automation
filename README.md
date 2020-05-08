@@ -39,4 +39,4 @@ In the example above, we've created a _StateColumn_ to group all issues labeled 
 <br />Now, whenever we add the label `WIP` to an existing issue, Cards Automation will move its corresponding card to this column.
 
 This also works backwards:
-If you manually move an issue card to this colum, Cards Automation will add the label `WIP` to the corresponding issue
+If you manually move an issue card to this column, Cards Automation will add the label `WIP` to the corresponding issue.
